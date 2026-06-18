@@ -1,0 +1,33 @@
+name: Roblox News Bot
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+
+jobs:
+  send-news:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install requests feedparser schedule
+    
+    - name: Run bot
+      env:
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
+      run: |
+        sed -i "s/8940147419:AAE0Lf44YylpRWboKJ0n1S5vbZ88IVjUOwk/$BOT_TOKEN/g" bot_news.py
+        sed -i "s/-1004491058570/$CHANNEL_ID/g" bot_news.py
+        python bot_news.py &
+        sleep 30
